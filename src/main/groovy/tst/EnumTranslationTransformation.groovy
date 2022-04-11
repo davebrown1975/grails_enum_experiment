@@ -8,10 +8,8 @@ import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
-import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.compiler.injection.GrailsASTUtils
@@ -20,19 +18,15 @@ import org.springframework.context.i18n.LocaleContextHolder
 import static groovyjarjarasm.asm.Opcodes.ACC_PUBLIC
 
 @Slf4j
-@AstTransformer
-@GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
 @CompileStatic
+@AstTransformer
+@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
 class EnumTranslationTransformation implements ASTTransformation {
-
-//  private static final Logger LOG = LoggerFactory.getLogger( EnumTranslationTransformation.class )
-  private CompilationUnit compilationUnit;
 
   @Override
   public void visit(ASTNode[] nodes, SourceUnit source) {
     println "In Visit"
     // this.sourceUnit = sourceUnit
-    println StringGroovyMethods.plus(StringGroovyMethods.plus(StringGroovyMethods.plus(ExampleEnum.getCanonicalName(), "."), "name"), ".label")
     ExpandoMetaClass.disableGlobally()
 
     final List<ClassNode> classNodes = source?.getAST()?.classes ?: []
