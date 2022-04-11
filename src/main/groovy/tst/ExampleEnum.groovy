@@ -1,6 +1,6 @@
 package tst
 
-enum ExampleEnum implements Displayable{
+enum ExampleEnum {
 
   SOMETHING,
   SOMETHING_ELSE

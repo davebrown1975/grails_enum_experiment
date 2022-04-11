@@ -1,2 +1,5 @@
 rootProject.name = 'enum_ast'
 
+include 'AstTransformsPlugin'
+
+project(':AstTransformsPlugin').projectDir = new File('inline-plugins/AstTransformsPlugin')
