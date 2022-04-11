@@ -1,17 +1,17 @@
-package org.grails.compiler
+package tst
 
 import grails.compiler.ast.AstTransformer
 import grails.util.Holders
-import groovy.transform.CompilationUnitAware
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.codehaus.groovy.ast.ASTNode
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.builder.AstBuilder
-import org.codehaus.groovy.classgen.GeneratorContext
 import org.codehaus.groovy.control.CompilationUnit
 import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.SourceUnit
+import org.codehaus.groovy.runtime.StringGroovyMethods
 import org.codehaus.groovy.transform.ASTTransformation
 import org.codehaus.groovy.transform.GroovyASTTransformation
 import org.grails.compiler.injection.GrailsASTUtils
@@ -22,15 +22,18 @@ import static groovyjarjarasm.asm.Opcodes.ACC_PUBLIC
 @Slf4j
 @AstTransformer
 @GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
-class EnumTranslationTransformation implements ASTTransformation, CompilationUnitAware {
+@CompileStatic
+class EnumTranslationTransformation implements ASTTransformation {
 
 //  private static final Logger LOG = LoggerFactory.getLogger( EnumTranslationTransformation.class )
   private CompilationUnit compilationUnit;
 
   @Override
   public void visit(ASTNode[] nodes, SourceUnit source) {
-    ExpandoMetaClass.disableGlobally()
     println "In Visit"
+    // this.sourceUnit = sourceUnit
+    println StringGroovyMethods.plus(StringGroovyMethods.plus(StringGroovyMethods.plus(ExampleEnum.getCanonicalName(), "."), "name"), ".label")
+    ExpandoMetaClass.disableGlobally()
 
     final List<ClassNode> classNodes = source?.getAST()?.classes ?: []
     classNodes.each { ClassNode classNode ->
@@ -39,7 +42,7 @@ class EnumTranslationTransformation implements ASTTransformation, CompilationUni
           classNode.addMethod(createDisplayNameMethod())
           classNode.addMethod(createDisplayNameMethodWithLocale())
           GrailsASTUtils.processVariableScopes(source, classNode)
-          log.info("displayName() and displayName(Locale) methods added to Enum '${classNode.name}'")
+          println("displayName() and displayName(Locale) methods added to Enum '${classNode.name}'")
         }
       }
       catch (Exception e) {
@@ -210,19 +213,4 @@ class EnumTranslationTransformation implements ASTTransformation, CompilationUni
       }
     }.first() as MethodNode
   }
-//
-//  private static void log( String message ) {
-//    if( LOG.isInfoEnabled() ) {
-//      LOG.info( message )
-//    }
-//    else {
-//      System.out.println( "${LOG.name}: $message" )
-//    }
-//  }
-
-  @Override
-  public void setCompilationUnit(CompilationUnit compilationUnit) {
-    this.compilationUnit = compilationUnit;
-  }
-
 }
